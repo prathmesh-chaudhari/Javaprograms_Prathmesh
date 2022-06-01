@@ -1,0 +1,349 @@
+SQL Day 5 	27 May 2022
+
+Server [localhost]:
+Database [postgres]:
+Port [5432]:
+Username [postgres]:
+Password for user postgres:
+psql (14.3)
+WARNING: Console code page (437) differs from Windows code page (1252)
+         8-bit characters might not work correctly. See psql reference
+         page "Notes for Windows users" for details.
+Type "help" for help.
+
+postgres=# \l
+                                           List of databases
+     Name      |  Owner   | Encoding |      Collate       |       Ctype        |   Access privileges
+---------------+----------+----------+--------------------+--------------------+-----------------------
+ employee_data | postgres | UTF8     | English_India.1252 | English_India.1252 |
+ postgres      | postgres | UTF8     | English_India.1252 | English_India.1252 |
+ template0     | postgres | UTF8     | English_India.1252 | English_India.1252 | =c/postgres          +
+               |          |          |                    |                    | postgres=CTc/postgres
+ template1     | postgres | UTF8     | English_India.1252 | English_India.1252 | =c/postgres          +
+               |          |          |                    |                    | postgres=CTc/postgres
+(4 rows)
+
+
+postgres=# \c employee_data
+You are now connected to database "employee_data" as user "postgres".
+employee_data=# \d
+                 List of relations
+ Schema |          Name          | Type  |  Owner
+--------+------------------------+-------+----------
+ public | company                | table | postgres
+ public | data_table_of_employee | table | postgres
+ public | department             | table | postgres
+(3 rows)
+
+
+employee_data=# select * from company;
+ id |     name     | age |  address   | salary |  phoneno
+----+--------------+-----+------------+--------+------------
+  1 | Kedarnathrao |  56 | Jalgaon    | 700000 | 8670757098
+  2 | Gopal        |  36 | Chandrapur | 400000 | 6607570660
+  3 | Gangeshrao   |  66 | Nandurbar  | 900000 | 7907780669
+  4 | Sandesh      |  26 | Pune       | 300000 | 8807780688
+  5 | Omkar        |  32 | Raigad     | 450000 | 4504380621
+(5 rows)
+
+
+employee_data=# select * from department;
+ dept_id |    dept_name     | emp_id | experience
+---------+------------------+--------+------------
+     101 | IndustrialSafety |      1 |         30
+     102 | IT Automation    |      2 |         10
+     103 | IT Support       |      3 |         40
+     104 | Java Developer   |      4 |          2
+     105 | IT Security      |      5 |          8
+(5 rows)
+
+
+employee_data=# select * from data_table_ofemployee;
+ERROR:  relation "data_table_ofemployee" does not exist
+LINE 1: select * from data_table_ofemployee;
+                      ^
+employee_data=# select * from data_table_of_employee;
+ id | first_name | last_name | age | gender |      location       | salary | marrtialstatus | day_leaves
+----+------------+-----------+-----+--------+---------------------+--------+----------------+------------
+  2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 | Married        |          0
+  3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000 | Married        |          0
+  4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan     |  55000 | Married        |          0
+  5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas        |  55000 | Married        |          0
+  6 | Mahadev    | Purandare |  45 | M      | 40, Iscon           |  60000 | Married        |          0
+  7 | Rajesh     | Wagale    |  45 | M      | 40, Icon            |  60000 | Married        |          0
+  8 | Jitesh     | Chitale   |  45 | M      | 40, Shevneri        |  70000 | Married        |          0
+(7 rows)
+
+
+employee_data=# select emp_id, name, dept_name from company left outer join department on company.id=department.emp_id;
+ emp_id |     name     |    dept_name
+--------+--------------+------------------
+      1 | Kedarnathrao | IndustrialSafety
+      2 | Gopal        | IT Automation
+      3 | Gangeshrao   | IT Support
+      4 | Sandesh      | Java Developer
+      5 | Omkar        | IT Security
+(5 rows)
+
+
+employee_data=# select emp_id, name, dept_name from company inner join department on company.id=department.emp_id;
+ emp_id |     name     |    dept_name
+--------+--------------+------------------
+      1 | Kedarnathrao | IndustrialSafety
+      2 | Gopal        | IT Automation
+      3 | Gangeshrao   | IT Support
+      4 | Sandesh      | Java Developer
+      5 | Omkar        | IT Security
+(5 rows)
+
+
+employee_data=# select emp_id, name, dept_name from company inner join department on company.id=department.emp_id
+employee_data-# UNION
+employee_data-# select emp_id, name, dept_name from company left outer join department on company.id=department.emp_id;
+ emp_id |     name     |    dept_name
+--------+--------------+------------------
+      2 | Gopal        | IT Automation
+      1 | Kedarnathrao | IndustrialSafety
+      3 | Gangeshrao   | IT Support
+      4 | Sandesh      | Java Developer
+      5 | Omkar        | IT Security
+(5 rows)
+
+employee_data=# select emp_id, name, dept_name from company inner join department on company.id=department.emp_id
+employee_data-# UNION ALL
+employee_data-# select emp_id, name, dept_name from company left outer join department on company.id=department.emp_id;
+ emp_id |     name     |    dept_name
+--------+--------------+------------------
+      1 | Kedarnathrao | IndustrialSafety
+      2 | Gopal        | IT Automation
+      3 | Gangeshrao   | IT Support
+      4 | Sandesh      | Java Developer
+      5 | Omkar        | IT Security
+      1 | Kedarnathrao | IndustrialSafety
+      2 | Gopal        | IT Automation
+      3 | Gangeshrao   | IT Support
+      4 | Sandesh      | Java Developer
+      5 | Omkar        | IT Security
+(10 rows)
+
+employee_data=# select * from data_table_of_employee;
+ id | first_name | last_name | age | gender |      location       | salary | marrtialstatus | day_leaves
+----+------------+-----------+-----+--------+---------------------+--------+----------------+------------
+  2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 | Married        |          0
+  3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000 | Married        |          0
+  4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan     |  55000 | Married        |          0
+  5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas        |  55000 | Married        |          0
+  6 | Mahadev    | Purandare |  45 | M      | 40, Iscon           |  60000 | Married        |          0
+  7 | Rajesh     | Wagale    |  45 | M      | 40, Icon            |  60000 | Married        |          0
+  8 | Jitesh     | Chitale   |  45 | M      | 40, Shevneri        |  70000 | Married        |          0
+(7 rows)
+
+
+employee_data=# select id as empid, first_name as fname, last_name as lname from data_table_of_employee;
+ empid |  fname  |   lname
+-------+---------+-----------
+     2 | Lokesh  | Raut
+     3 | Rajesh  | Wagale
+     4 | Jitesh  | Chitale
+     5 | Mahadev | Purandare
+     6 | Mahadev | Purandare
+     7 | Rajesh  | Wagale
+     8 | Jitesh  | Chitale
+(7 rows)
+
+
+employee_data=# select * from data_table_of_employee;
+ id | first_name | last_name | age | gender |      location       | salary | marrtialstatus | day_leaves
+----+------------+-----------+-----+--------+---------------------+--------+----------------+------------
+  2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 | Married        |          0
+  3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000 | Married        |          0
+  4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan     |  55000 | Married        |          0
+  5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas        |  55000 | Married        |          0
+  6 | Mahadev    | Purandare |  45 | M      | 40, Iscon           |  60000 | Married        |          0
+  7 | Rajesh     | Wagale    |  45 | M      | 40, Icon            |  60000 | Married        |          0
+  8 | Jitesh     | Chitale   |  45 | M      | 40, Shevneri        |  70000 | Married        |          0
+(7 rows)
+
+employee_data=# select * from campany;
+ERROR:  relation "campany" does not exist
+LINE 1: select * from campany;
+                      ^
+employee_data=# select * from company;
+ id |     name     | age |  address   | salary |  phoneno
+----+--------------+-----+------------+--------+------------
+  1 | Kedarnathrao |  56 | Jalgaon    | 700000 | 8670757098
+  2 | Gopal        |  36 | Chandrapur | 400000 | 6607570660
+  3 | Gangeshrao   |  66 | Nandurbar  | 900000 | 7907780669
+  4 | Sandesh      |  26 | Pune       | 300000 | 8807780688
+  5 | Omkar        |  32 | Raigad     | 450000 | 4504380621
+(5 rows)
+
+
+employee_data=# create temp view Temp_company as id, name, age, salary from company;
+ERROR:  syntax error at or near "id"
+LINE 1: create temp view Temp_company as id, name, age, salary from ...
+                                         ^
+employee_data=# create temp view Temp_company as select id, name, age, salary from company;
+CREATE VIEW
+employee_data=# select * from temp_company;
+ id |     name     | age | salary
+----+--------------+-----+--------
+  1 | Kedarnathrao |  56 | 700000
+  2 | Gopal        |  36 | 400000
+  3 | Gangeshrao   |  66 | 900000
+  4 | Sandesh      |  26 | 300000
+  5 | Omkar        |  32 | 450000
+(5 rows)
+
+
+employee_data=# \d
+                   List of relations
+  Schema   |          Name          | Type  |  Owner
+-----------+------------------------+-------+----------
+ pg_temp_4 | temp_company           | view  | postgres
+ public    | company                | table | postgres
+ public    | data_table_of_employee | table | postgres
+ public    | department             | table | postgres
+(4 rows)
+
+
+employee_data=# select * from department;
+ dept_id |    dept_name     | emp_id | experience
+---------+------------------+--------+------------
+     101 | IndustrialSafety |      1 |         30
+     102 | IT Automation    |      2 |         10
+     103 | IT Support       |      3 |         40
+     104 | Java Developer   |      4 |          2
+     105 | IT Security      |      5 |          8
+(5 rows)
+
+
+employee_data=# create temp view company_dept as select company.id, department.dept_id, company.name, department.dept_name from company, department;
+CREATE VIEW
+employee_data=# select * from company_dept;
+ id | dept_id |     name     |    dept_name
+----+---------+--------------+------------------
+  1 |     101 | Kedarnathrao | IndustrialSafety
+  2 |     101 | Gopal        | IndustrialSafety
+  3 |     101 | Gangeshrao   | IndustrialSafety
+  4 |     101 | Sandesh      | IndustrialSafety
+  5 |     101 | Omkar        | IndustrialSafety
+  1 |     102 | Kedarnathrao | IT Automation
+  2 |     102 | Gopal        | IT Automation
+  3 |     102 | Gangeshrao   | IT Automation
+  4 |     102 | Sandesh      | IT Automation
+  5 |     102 | Omkar        | IT Automation
+  1 |     103 | Kedarnathrao | IT Support
+  2 |     103 | Gopal        | IT Support
+  3 |     103 | Gangeshrao   | IT Support
+  4 |     103 | Sandesh      | IT Support
+  5 |     103 | Omkar        | IT Support
+  1 |     104 | Kedarnathrao | Java Developer
+  2 |     104 | Gopal        | Java Developer
+  3 |     104 | Gangeshrao   | Java Developer
+  4 |     104 | Sandesh      | Java Developer
+  5 |     104 | Omkar        | Java Developer
+  1 |     105 | Kedarnathrao | IT Security
+  2 |     105 | Gopal        | IT Security
+  3 |     105 | Gangeshrao   | IT Security
+  4 |     105 | Sandesh      | IT Security
+  5 |     105 | Omkar        | IT Security
+(25 rows)
+
+employee_data=# \d
+                   List of relations
+  Schema   |          Name          | Type  |  Owner
+-----------+------------------------+-------+----------
+ pg_temp_4 | company_dept           | view  | postgres
+ pg_temp_4 | temp_company           | view  | postgres
+ public    | company                | table | postgres
+ public    | data_table_of_employee | table | postgres
+ public    | department             | table | postgres
+(5 rows)
+
+
+employee_data=# create view company_department as select company.id, department.dept_id, company.name, department.dept_name from company, department;
+CREATE VIEW
+employee_data=# \d
+                   List of relations
+  Schema   |          Name          | Type  |  Owner
+-----------+------------------------+-------+----------
+ pg_temp_4 | company_dept           | view  | postgres
+ pg_temp_4 | temp_company           | view  | postgres
+ public    | company                | table | postgres
+ public    | company_department     | view  | postgres
+ public    | data_table_of_employee | table | postgres
+ public    | department             | table | postgres
+(6 rows)
+
+
+employee_data=# drop view company_department;
+DROP VIEW
+employee_data=# \d
+                   List of relations
+  Schema   |          Name          | Type  |  Owner
+-----------+------------------------+-------+----------
+ pg_temp_4 | company_dept           | view  | postgres
+ pg_temp_4 | temp_company           | view  | postgres
+ public    | company                | table | postgres
+ public    | data_table_of_employee | table | postgres
+ public    | department             | table | postgres
+(5 rows)
+
+
+employee_data=# drop view temp_company;
+DROP VIEW
+employee_data=# \d
+                   List of relations
+  Schema   |          Name          | Type  |  Owner
+-----------+------------------------+-------+----------
+ pg_temp_4 | company_dept           | view  | postgres
+ public    | company                | table | postgres
+ public    | data_table_of_employee | table | postgres
+ public    | department             | table | postgres
+(4 rows)
+
+employee_data=#  begin;
+BEGIN
+employee_data=*# delete from department where dept_id = 1;
+DELETE 0
+employee_data=*# delete from department where dept_id = 101;
+DELETE 1
+employee_data=*# select * from department;
+ dept_id |   dept_name    | emp_id | experience
+---------+----------------+--------+------------
+     102 | IT Automation  |      2 |         10
+     103 | IT Support     |      3 |         40
+     104 | Java Developer |      4 |          2
+     105 | IT Security    |      5 |          8
+(4 rows)
+
+
+employee_data=*# rollback;
+ROLLBACK
+employee_data=# select * from department;
+ dept_id |    dept_name     | emp_id | experience
+---------+------------------+--------+------------
+     101 | IndustrialSafety |      1 |         30
+     102 | IT Automation    |      2 |         10
+     103 | IT Support       |      3 |         40
+     104 | Java Developer   |      4 |          2
+     105 | IT Security      |      5 |          8
+(5 rows)
+
+employee_data=# begin
+employee_data-# ;
+BEGIN
+employee_data=*# lock table department in access exclusive mode;
+LOCK TABLE
+employee_data=*# commit;
+COMMIT
+employee_data=# select * from department;
+ dept_id |    dept_name     | emp_id | experience
+---------+------------------+--------+------------
+     101 | IndustrialSafety |      1 |         30
+     102 | IT Automation    |      2 |         10
+     103 | IT Support       |      3 |         40
+     104 | Java Developer   |      4 |          2
+     105 | IT Security      |      5 |          8
+(5 rows)

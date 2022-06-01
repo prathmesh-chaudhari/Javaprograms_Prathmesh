@@ -1,0 +1,297 @@
+Server [localhost]:
+Database [postgres]:
+Port [5432]:
+Username [postgres]:
+Password for user postgres:
+psql (14.3)
+WARNING: Console code page (437) differs from Windows code page (1252)
+         8-bit characters might not work correctly. See psql reference
+         page "Notes for Windows users" for details.
+Type "help" for help.
+
+postgres=# \l
+                                           List of databases
+     Name      |  Owner   | Encoding |      Collate       |       Ctype        |   Access privileges
+---------------+----------+----------+--------------------+--------------------+-----------------------
+ employee_info | postgres | UTF8     | English_India.1252 | English_India.1252 |
+ postgres      | postgres | UTF8     | English_India.1252 | English_India.1252 |
+ template0     | postgres | UTF8     | English_India.1252 | English_India.1252 | =c/postgres          +
+               |          |          |                    |                    | postgres=CTc/postgres
+ template1     | postgres | UTF8     | English_India.1252 | English_India.1252 | =c/postgres          +
+               |          |          |                    |                    | postgres=CTc/postgres
+(4 rows)
+
+
+postgres=# \c employee_info;
+You are now connected to database "employee_info" as user "postgres".
+employee_info=# \d
+             List of relations
+ Schema |     Name      | Type  |  Owner
+--------+---------------+-------+----------
+ public | employee_data | table | postgres
+(1 row)
+
+
+employee_info=# select * from employee_data;
+ emp_id | first_name | last_name | age | gender |       address       | salary | marrtialstatus
+--------+------------+-----------+-----+--------+---------------------+--------+----------------
+      2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 | Married
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000 | Married
+      4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan     |  55000 | Married
+      5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas        |  55000 | Married
+(4 rows)
+
+
+employee_info=# select first_name, last_name, sum(salary) from employee_data group by first_name, last_name;
+ first_name | last_name |  sum
+------------+-----------+-------
+ Mahadev    | Purandare | 55000
+ Rajesh     | Wagale    | 55000
+ Lokesh     | Raut      | 55000
+ Jitesh     | Chitale   | 55000
+(4 rows)
+
+
+employee_info=# insert into employee_data values(6, 'Mahadev', 'Purandare', 45, 'M', '40, Iscon', 60000,'Married');
+INSERT 0 1
+employee_info=# insert into employee_data values(7, 'Rajesh', Wagale', 45, 'M', '40, Icon', 60000,'Married');
+employee_info'# insert into employee_data values(7, 'Rajesh', Wagale', 45, 'M', '40, Icon', 60000,'Married');
+ERROR:  syntax error at or near "M"
+LINE 1: ...o employee_data values(7, 'Rajesh', Wagale', 45, 'M', '40, I...
+                                                             ^
+employee_info=# insert into employee_data values(7, 'Rajesh', 'Wagale', 45, 'M', '40, Icon', 60000,'Married');
+INSERT 0 1
+employee_info=# insert into employee_data values(8, 'Jitesh', 'Chitale', 45, 'M', '40, Shevneri', 70000,'Married');
+INSERT 0 1
+employee_info=# select * from employee_data;
+ emp_id | first_name | last_name | age | gender |       address       | salary | marrtialstatus
+--------+------------+-----------+-----+--------+---------------------+--------+----------------
+      2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 | Married
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000 | Married
+      4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan     |  55000 | Married
+      5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas        |  55000 | Married
+      6 | Mahadev    | Purandare |  45 | M      | 40, Iscon           |  60000 | Married
+      7 | Rajesh     | Wagale    |  45 | M      | 40, Icon            |  60000 | Married
+      8 | Jitesh     | Chitale   |  45 | M      | 40, Shevneri        |  70000 | Married
+(7 rows)
+
+
+employee_info=# select first_name, last_name, sum(salary) from employee_data group by first_name, last_name;
+ first_name | last_name |  sum
+------------+-----------+--------
+ Mahadev    | Purandare | 115000
+ Rajesh     | Wagale    | 115000
+ Lokesh     | Raut      |  55000
+ Jitesh     | Chitale   | 125000
+(4 rows)
+
+
+employee_info=# select first_name, last_name, sum(salary) from employee_data group by first_name, last_name;
+ first_name | last_name |  sum
+------------+-----------+--------
+ Mahadev    | Purandare | 115000
+ Rajesh     | Wagale    | 115000
+ Lokesh     | Raut      |  55000
+ Jitesh     | Chitale   | 125000
+(4 rows)
+
+
+employee_info=# select first_name, last_name, sum(salary) from employee_data group by first_name, last_name desc;
+ERROR:  syntax error at or near "desc"
+LINE 1: ...ary) from employee_data group by first_name, last_name desc;
+                                                                  ^
+employee_info=# select first_name, last_name, sum(salary) from employee_data group by first_name, last_name, desc;
+ERROR:  syntax error at or near "desc"
+LINE 1: ...ry) from employee_data group by first_name, last_name, desc;
+                                                                  ^
+employee_info=# select first_name, last_name, sum(salary) from employee_data group by first_name, last_name [desc];
+ERROR:  syntax error at or near "desc"
+LINE 1: ...y) from employee_data group by first_name, last_name [desc];
+                                                                 ^
+employee_info=# select first_name, last_name, sum(salary) from employee_data group by first_name, last_name desc;
+ERROR:  syntax error at or near "desc"
+LINE 1: ...ary) from employee_data group by first_name, last_name desc;
+                                                                  ^
+employee_info=# select first_name, last_name, sum(salary) from employee_data group by first_name, last_name DESC;
+ERROR:  syntax error at or near "DESC"
+LINE 1: ...ary) from employee_data group by first_name, last_name DESC;
+                                                                  ^
+employee_info=# select first_name, last_name, sum(salary) from employee_data group by first_name, last_name ASC;
+ERROR:  syntax error at or near "ASC"
+LINE 1: ...lary) from employee_data group by first_name, last_name ASC;
+                                                                   ^
+employee_info=# select first_name, last_name, sum(salary) from employee_data group by first_name, last_name desc;
+ERROR:  syntax error at or near "desc"
+LINE 1: ...ary) from employee_data group by first_name, last_name desc;
+                                                                  ^
+employee_info=# select first_name, last_name, sum(salary) from employee_data group by first_name, last_name order by desc;
+ERROR:  syntax error at or near "desc"
+LINE 1: ... employee_data group by first_name, last_name order by desc;
+                                                                  ^
+employee_info=# select first_name, last_name, sum(salary) from employee_data group by first_name, last_name order by first_name desc;
+ first_name | last_name |  sum
+------------+-----------+--------
+ Rajesh     | Wagale    | 115000
+ Mahadev    | Purandare | 115000
+ Lokesh     | Raut      |  55000
+ Jitesh     | Chitale   | 125000
+(4 rows)
+
+
+employee_info=# select first_name, last_name, sum(age) from employee_data group by first_name, last_name order by first_name desc;
+ first_name | last_name | sum
+------------+-----------+-----
+ Rajesh     | Wagale    |  94
+ Mahadev    | Purandare | 124
+ Lokesh     | Raut      |  55
+ Jitesh     | Chitale   |  74
+(4 rows)
+
+
+employee_info=# select * from employee_data;
+ emp_id | first_name | last_name | age | gender |       address       | salary | marrtialstatus
+--------+------------+-----------+-----+--------+---------------------+--------+----------------
+      2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 | Married
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000 | Married
+      4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan     |  55000 | Married
+      5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas        |  55000 | Married
+      6 | Mahadev    | Purandare |  45 | M      | 40, Iscon           |  60000 | Married
+      7 | Rajesh     | Wagale    |  45 | M      | 40, Icon            |  60000 | Married
+      8 | Jitesh     | Chitale   |  45 | M      | 40, Shevneri        |  70000 | Married
+(7 rows)
+
+
+employee_info=# select first_name, last_name from employee_data group by first_name, last_name having count(first_name)<2;
+ first_name | last_name
+------------+-----------
+ Lokesh     | Raut
+(1 row)
+
+
+employee_info=# select first_name, last_name from employee_data group by first_name, last_name having count(age)<50;
+ first_name | last_name
+------------+-----------
+ Mahadev    | Purandare
+ Rajesh     | Wagale
+ Lokesh     | Raut
+ Jitesh     | Chitale
+(4 rows)
+
+
+employee_info=# select first_name, last_name from employee_data group by first_name, last_name having count(age)>50;
+ first_name | last_name
+------------+-----------
+(0 rows)
+
+
+employee_info=# select first_name, last_name from employee_data group by first_name, last_name having count(last_name)>3;
+ first_name | last_name
+------------+-----------
+(0 rows)
+
+
+employee_info=# select first_name, last_name from employee_data group by first_name, last_name having count(last_name)<3;
+ first_name | last_name
+------------+-----------
+ Mahadev    | Purandare
+ Rajesh     | Wagale
+ Lokesh     | Raut
+ Jitesh     | Chitale
+(4 rows)
+
+
+employee_info=# select * from employee_data;
+ emp_id | first_name | last_name | age | gender |       address       | salary | marrtialstatus
+--------+------------+-----------+-----+--------+---------------------+--------+----------------
+      2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 | Married
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000 | Married
+      4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan     |  55000 | Married
+      5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas        |  55000 | Married
+      6 | Mahadev    | Purandare |  45 | M      | 40, Iscon           |  60000 | Married
+      7 | Rajesh     | Wagale    |  45 | M      | 40, Icon            |  60000 | Married
+      8 | Jitesh     | Chitale   |  45 | M      | 40, Shevneri        |  70000 | Married
+(7 rows)
+
+
+employee_info=# select distinct first_name from employee_data;
+ first_name
+------------
+ Rajesh
+ Lokesh
+ Mahadev
+ Jitesh
+(4 rows)
+
+
+employee_info=# select distinct first_name, last_name from employee_data;
+ first_name | last_name
+------------+-----------
+ Mahadev    | Purandare
+ Rajesh     | Wagale
+ Lokesh     | Raut
+ Jitesh     | Chitale
+(4 rows)
+
+
+employee_info=# select distinct first_name, last_name, age from employee_data;
+ first_name | last_name | age
+------------+-----------+-----
+ Lokesh     | Raut      |  55
+ Jitesh     | Chitale   |  45
+ Mahadev    | Purandare |  79
+ Rajesh     | Wagale    |  49
+ Mahadev    | Purandare |  45
+ Rajesh     | Wagale    |  45
+ Jitesh     | Chitale   |  29
+(7 rows)
+
+
+employee_info=# select distinct first_name, last_name, salary from employee_data;
+ first_name | last_name | salary
+------------+-----------+--------
+ Jitesh     | Chitale   |  70000
+ Lokesh     | Raut      |  55000
+ Jitesh     | Chitale   |  55000
+ Rajesh     | Wagale    |  55000
+ Mahadev    | Purandare |  55000
+ Mahadev    | Purandare |  60000
+ Rajesh     | Wagale    |  60000
+(7 rows)
+
+
+employee_info=# create table Company(id int primary key not null, name text not null, age int not null, address text not null, salary real not null, phoneno bigint unique not null default 50000.00);
+CREATE TABLE
+employee_info=# \d
+             List of relations
+ Schema |     Name      | Type  |  Owner
+--------+---------------+-------+----------
+ public | company       | table | postgres
+ public | employee_data | table | postgres
+(2 rows)
+
+
+employee_info=# create table department(dept_id int primary key not null, dept_name text not null, emp_id int references Company(id), Experience real not null check (Experience > 0));
+CREATE TABLE
+employee_info=# \d
+             List of relations
+ Schema |     Name      | Type  |  Owner
+--------+---------------+-------+----------
+ public | company       | table | postgres
+ public | department    | table | postgres
+ public | employee_data | table | postgres
+(3 rows)
+
+
+employee_info=# select * from Company;
+ id | name | age | address | salary | phoneno
+----+------+-----+---------+--------+---------
+(0 rows)
+
+
+employee_info=# select * from department;
+ dept_id | dept_name | emp_id | experience
+---------+-----------+--------+------------
+(0 rows)
+
+
+employee_info=#

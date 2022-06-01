@@ -1,0 +1,412 @@
+Server [localhost]:
+Database [postgres]:
+Port [5432]:
+Username [postgres]:
+Password for user postgres:
+psql (14.3)
+WARNING: Console code page (437) differs from Windows code page (1252)
+         8-bit characters might not work correctly. See psql reference
+         page "Notes for Windows users" for details.
+Type "help" for help.
+
+postgres=# \l
+                                           List of databases
+     Name      |  Owner   | Encoding |      Collate       |       Ctype        |   Access privileges
+---------------+----------+----------+--------------------+--------------------+-----------------------
+ employee_info | postgres | UTF8     | English_India.1252 | English_India.1252 |
+ postgres      | postgres | UTF8     | English_India.1252 | English_India.1252 |
+ template0     | postgres | UTF8     | English_India.1252 | English_India.1252 | =c/postgres          +
+               |          |          |                    |                    | postgres=CTc/postgres
+ template1     | postgres | UTF8     | English_India.1252 | English_India.1252 | =c/postgres          +
+               |          |          |                    |                    | postgres=CTc/postgres
+(4 rows)
+
+
+postgres=# \c employee_info
+You are now connected to database "employee_info" as user "postgres".
+employee_info=# \d
+             List of relations
+ Schema |     Name      | Type  |  Owner
+--------+---------------+-------+----------
+ public | employee_data | table | postgres
+(1 row)
+
+
+employee_info=# select * from employee_data;
+ emp_id | first_name | last_name | age | gender |       address       | salary
+--------+------------+-----------+-----+--------+---------------------+--------
+      1 | Rajesh     | Dubey     |  45 | M      | 90, Ion Residency   |  60000
+      2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  80000
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  90000
+      4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan     |  50000
+      5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas        |  70000
+(5 rows)
+
+
+employee_info=# update employee_data set salary = 55000;
+UPDATE 5
+employee_info=# select * from employee_data;
+ emp_id | first_name | last_name | age | gender |       address       | salary
+--------+------------+-----------+-----+--------+---------------------+--------
+      1 | Rajesh     | Dubey     |  45 | M      | 90, Ion Residency   |  55000
+      2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000
+      4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan     |  55000
+      5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas        |  55000
+(5 rows)
+
+
+employee_info=# udate employee_data set age = 26, address = 'mumbai', salary = 60000 where first_name = 'Rajesh' and last_name = 'Dubey';
+ERROR:  syntax error at or near "udate"
+LINE 1: udate employee_data set age = 26, address = 'mumbai', salary...
+        ^
+employee_info=# update employee_data set age = 26, address = 'mumbai', salary = 60000 where first_name = 'Rajesh' and last_name = 'Dubey';
+UPDATE 1
+employee_info=# select * from employee_data;
+ emp_id | first_name | last_name | age | gender |       address       | salary
+--------+------------+-----------+-----+--------+---------------------+--------
+      2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000
+      4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan     |  55000
+      5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas        |  55000
+      1 | Rajesh     | Dubey     |  26 | M      | mumbai              |  60000
+(5 rows)
+
+
+employee_info=# delete from employee_data where first_name = 'Rajesh' and last_name = 'Dubey';
+DELETE 1
+employee_info=# select * from employee_data;
+ emp_id | first_name | last_name | age | gender |       address       | salary
+--------+------------+-----------+-----+--------+---------------------+--------
+      2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000
+      4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan     |  55000
+      5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas        |  55000
+(4 rows)
+
+
+employee_info=# alter table employee_data add column MarrtialStatus text;
+ALTER TABLE
+employee_info=# select * from employee_data;
+ emp_id | first_name | last_name | age | gender |       address       | salary | marrtialstatus
+--------+------------+-----------+-----+--------+---------------------+--------+----------------
+      2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 |
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000 |
+      4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan     |  55000 |
+      5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas        |  55000 |
+(4 rows)
+
+
+employee_info=# update employee_data set marritialstatus = 'Married';
+ERROR:  column "marritialstatus" of relation "employee_data" does not exist
+LINE 1: update employee_data set marritialstatus = 'Married';
+                                 ^
+employee_info=# add employee_data set marritialstatus = 'Married';
+ERROR:  syntax error at or near "add"
+LINE 1: add employee_data set marritialstatus = 'Married';
+        ^
+employee_info=# insert employee_data set marritialstatus = 'Married';
+ERROR:  syntax error at or near "employee_data"
+LINE 1: insert employee_data set marritialstatus = 'Married';
+               ^
+employee_info=# insert into employee_data set marritialstatus = 'Married';
+ERROR:  syntax error at or near "set"
+LINE 1: insert into employee_data set marritialstatus = 'Married';
+                                  ^
+employee_info=# insert into employee_data (marritialstatus) = 'Married';
+ERROR:  syntax error at or near "="
+LINE 1: insert into employee_data (marritialstatus) = 'Married';
+                                                    ^
+employee_info=# update employee_data set marrtialstatus = 'Married';
+UPDATE 4
+employee_info=# select * from employee_data;
+ emp_id | first_name | last_name | age | gender |       address       | salary | marrtialstatus
+--------+------------+-----------+-----+--------+---------------------+--------+----------------
+      2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 | Married
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000 | Married
+      4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan     |  55000 | Married
+      5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas        |  55000 | Married
+(4 rows)
+
+
+employee_info=#
+employee_info=#
+employee_info=#
+employee_info=#
+employee_info=#
+employee_info=#
+employee_info=#
+employee_info=#
+employee_info=#
+employee_info=#
+employee_info=#
+employee_info=#
+employee_info=#
+employee_info=#
+employee_info=#
+employee_info=# select * from employee_data;
+ emp_id | first_name | last_name | age | gender |       address       | salary | marrtialstatus
+--------+------------+-----------+-----+--------+---------------------+--------+----------------
+      2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 | Married
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000 | Married
+      4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan     |  55000 | Married
+      5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas        |  55000 | Married
+(4 rows)
+
+
+employee_info=# selet * from employee_data where column address LIKE '%I%c_';
+ERROR:  syntax error at or near "selet"
+LINE 1: selet * from employee_data where column address LIKE '%I%c_'...
+        ^
+employee_info=# select * from employee_data where column address LIKE '%I%c_';
+ERROR:  syntax error at or near "column"
+LINE 1: select * from employee_data where column address LIKE '%I%c_...
+                                          ^
+employee_info=# select * from employee_data where address LIKE '%I%c_';
+ emp_id | first_name | last_name | age | gender |       address       | salary | marrtialstatus
+--------+------------+-----------+-----+--------+---------------------+--------+----------------
+      2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 | Married
+(1 row)
+
+
+employee_info=# select * from employee_data where address LIKE '5%';
+ emp_id | first_name | last_name | age | gender |    address     | salary | marrtialstatus
+--------+------------+-----------+-----+--------+----------------+--------+----------------
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan |  55000 | Married
+(1 row)
+
+
+employee_info=# select * from employee_data where address LIKE '%M%D%';
+ emp_id | first_name | last_name | age | gender |     address     | salary | marrtialstatus
+--------+------------+-----------+-----+--------+-----------------+--------+----------------
+      4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan |  55000 | Married
+(1 row)
+
+
+employee_info=# select * from employee_data where address LIKE '%n';
+ emp_id | first_name | last_name | age | gender |     address     | salary | marrtialstatus
+--------+------------+-----------+-----+--------+-----------------+--------+----------------
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan  |  55000 | Married
+      4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan |  55000 | Married
+(2 rows)
+
+
+employee_info=# select * from employee_data where age :: text LIKE '7_';
+ emp_id | first_name | last_name | age | gender |   address    | salary | marrtialstatus
+--------+------------+-----------+-----+--------+--------------+--------+----------------
+      5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas |  55000 | Married
+(1 row)
+
+
+employee_info=# select * from employee_data where age :: text LIKE '_9';
+ emp_id | first_name | last_name | age | gender |     address     | salary | marrtialstatus
+--------+------------+-----------+-----+--------+-----------------+--------+----------------
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan  |  55000 | Married
+      4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan |  55000 | Married
+      5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas    |  55000 | Married
+(3 rows)
+
+
+employee_info=# select * from employee_data where address LIKE '5';
+ emp_id | first_name | last_name | age | gender | address | salary | marrtialstatus
+--------+------------+-----------+-----+--------+---------+--------+----------------
+(0 rows)
+
+
+employee_info=# select * from employee_data where address LIKE '%5';
+ emp_id | first_name | last_name | age | gender | address | salary | marrtialstatus
+--------+------------+-----------+-----+--------+---------+--------+----------------
+(0 rows)
+
+
+employee_info=# select * from employee_data where address LIKE '5%';
+ emp_id | first_name | last_name | age | gender |    address     | salary | marrtialstatus
+--------+------------+-----------+-----+--------+----------------+--------+----------------
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan |  55000 | Married
+(1 row)
+
+
+employee_info=# select * from employee_data where address LIKE '%,%';
+ emp_id | first_name | last_name | age | gender |       address       | salary | marrtialstatus
+--------+------------+-----------+-----+--------+---------------------+--------+----------------
+      2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 | Married
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000 | Married
+      4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan     |  55000 | Married
+      5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas        |  55000 | Married
+(4 rows)
+
+
+employee_info=# select * from employee_data where address LIKE '_0%';
+ emp_id | first_name | last_name | age | gender |       address       | salary | marrtialstatus
+--------+------------+-----------+-----+--------+---------------------+--------+----------------
+      2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 | Married
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000 | Married
+      4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan     |  55000 | Married
+(3 rows)
+
+
+employee_info=# select * from employee_data LIMIT 2;
+ emp_id | first_name | last_name | age | gender |       address       | salary | marrtialstatus
+--------+------------+-----------+-----+--------+---------------------+--------+----------------
+      2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 | Married
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000 | Married
+(2 rows)
+
+
+employee_info=# select * from employee_data LIMIT 0;
+ emp_id | first_name | last_name | age | gender | address | salary | marrtialstatus
+--------+------------+-----------+-----+--------+---------+--------+----------------
+(0 rows)
+
+
+employee_info=# select * from employee_data LIMIT 9;
+ emp_id | first_name | last_name | age | gender |       address       | salary | marrtialstatus
+--------+------------+-----------+-----+--------+---------------------+--------+----------------
+      2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 | Married
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000 | Married
+      4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan     |  55000 | Married
+      5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas        |  55000 | Married
+(4 rows)
+
+
+employee_info=# select * from employee_data LIMIT 1;
+ emp_id | first_name | last_name | age | gender |       address       | salary | marrtialstatus
+--------+------------+-----------+-----+--------+---------------------+--------+----------------
+      2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 | Married
+(1 row)
+
+
+employee_info=# select * from employee_data where saaLIMIT 1;
+ERROR:  syntax error at or near "1"
+LINE 1: select * from employee_data where saaLIMIT 1;
+                                                   ^
+employee_info=# select * from employee_data where salary > 50000 LIMIT 1;
+ emp_id | first_name | last_name | age | gender |       address       | salary | marrtialstatus
+--------+------------+-----------+-----+--------+---------------------+--------+----------------
+      2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 | Married
+(1 row)
+
+
+employee_info=# select * from employee_data where salary > 50000 LIMIT 2;
+ emp_id | first_name | last_name | age | gender |       address       | salary | marrtialstatus
+--------+------------+-----------+-----+--------+---------------------+--------+----------------
+      2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 | Married
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000 | Married
+(2 rows)
+
+
+employee_info=# select * from employee_data ORDER BY emp_id;
+ emp_id | first_name | last_name | age | gender |       address       | salary | marrtialstatus
+--------+------------+-----------+-----+--------+---------------------+--------+----------------
+      2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 | Married
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000 | Married
+      4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan     |  55000 | Married
+      5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas        |  55000 | Married
+(4 rows)
+
+
+employee_info=# select * from employee_data ORDER BY emp_id [DESC];
+ERROR:  syntax error at or near "DESC"
+LINE 1: select * from employee_data ORDER BY emp_id [DESC];
+                                                     ^
+employee_info=# select * from employee_data ORDER BY emp_id DESC;
+ emp_id | first_name | last_name | age | gender |       address       | salary | marrtialstatus
+--------+------------+-----------+-----+--------+---------------------+--------+----------------
+      5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas        |  55000 | Married
+      4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan     |  55000 | Married
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000 | Married
+      2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 | Married
+(4 rows)
+
+
+employee_info=# select * from employee_data ORDER BY age DESC;
+ emp_id | first_name | last_name | age | gender |       address       | salary | marrtialstatus
+--------+------------+-----------+-----+--------+---------------------+--------+----------------
+      5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas        |  55000 | Married
+      2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 | Married
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000 | Married
+      4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan     |  55000 | Married
+(4 rows)
+
+
+employee_info=# select * from employee_data ORDER BY age;
+ emp_id | first_name | last_name | age | gender |       address       | salary | marrtialstatus
+--------+------------+-----------+-----+--------+---------------------+--------+----------------
+      4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan     |  55000 | Married
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000 | Married
+      2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 | Married
+      5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas        |  55000 | Married
+(4 rows)
+
+
+employee_info=# select * from employee_data ORDER BY salary;
+ emp_id | first_name | last_name | age | gender |       address       | salary | marrtialstatus
+--------+------------+-----------+-----+--------+---------------------+--------+----------------
+      2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 | Married
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000 | Married
+      4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan     |  55000 | Married
+      5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas        |  55000 | Married
+(4 rows)
+
+
+employee_info=# select * from employee_data ORDER BY salary, age;
+ emp_id | first_name | last_name | age | gender |       address       | salary | marrtialstatus
+--------+------------+-----------+-----+--------+---------------------+--------+----------------
+      4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan     |  55000 | Married
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000 | Married
+      2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 | Married
+      5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas        |  55000 | Married
+(4 rows)
+
+
+employee_info=# select * from employee_data ORDER BY emp_id, age;
+ emp_id | first_name | last_name | age | gender |       address       | salary | marrtialstatus
+--------+------------+-----------+-----+--------+---------------------+--------+----------------
+      2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 | Married
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000 | Married
+      4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan     |  55000 | Married
+      5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas        |  55000 | Married
+(4 rows)
+
+
+employee_info=# select * from employee_data ORDER BY emp_id, age ASC;
+ emp_id | first_name | last_name | age | gender |       address       | salary | marrtialstatus
+--------+------------+-----------+-----+--------+---------------------+--------+----------------
+      2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 | Married
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000 | Married
+      4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan     |  55000 | Married
+      5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas        |  55000 | Married
+(4 rows)
+
+
+employee_info=# select * from employee_data ORDER BY emp_id, age Desc;
+ emp_id | first_name | last_name | age | gender |       address       | salary | marrtialstatus
+--------+------------+-----------+-----+--------+---------------------+--------+----------------
+      2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 | Married
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000 | Married
+      4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan     |  55000 | Married
+      5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas        |  55000 | Married
+(4 rows)
+
+
+employee_info=# select * from employee_data ORDER BY first_name Desc;
+ emp_id | first_name | last_name | age | gender |       address       | salary | marrtialstatus
+--------+------------+-----------+-----+--------+---------------------+--------+----------------
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000 | Married
+      5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas        |  55000 | Married
+      2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 | Married
+      4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan     |  55000 | Married
+(4 rows)
+
+
+employee_info=# select * from employee_data ORDER BY last_name Desc;
+ emp_id | first_name | last_name | age | gender |       address       | salary | marrtialstatus
+--------+------------+-----------+-----+--------+---------------------+--------+----------------
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000 | Married
+      2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 | Married
+      5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas        |  55000 | Married
+      4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan     |  55000 | Married
+(4 rows)
+
+
+employee_info=#

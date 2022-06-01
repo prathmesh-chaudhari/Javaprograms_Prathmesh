@@ -1,0 +1,501 @@
+Server [localhost]:
+Database [postgres]:
+Port [5432]:
+Username [postgres]:
+Password for user postgres:
+psql (14.3)
+WARNING: Console code page (437) differs from Windows code page (1252)
+         8-bit characters might not work correctly. See psql reference
+         page "Notes for Windows users" for details.
+Type "help" for help.
+
+postgres=# \l
+                                           List of databases
+     Name      |  Owner   | Encoding |      Collate       |       Ctype        |   Access privileges
+---------------+----------+----------+--------------------+--------------------+-----------------------
+ employee_info | postgres | UTF8     | English_India.1252 | English_India.1252 |
+ postgres      | postgres | UTF8     | English_India.1252 | English_India.1252 |
+ template0     | postgres | UTF8     | English_India.1252 | English_India.1252 | =c/postgres          +
+               |          |          |                    |                    | postgres=CTc/postgres
+ template1     | postgres | UTF8     | English_India.1252 | English_India.1252 | =c/postgres          +
+               |          |          |                    |                    | postgres=CTc/postgres
+(4 rows)
+
+
+postgres=# \c employee_info
+You are now connected to database "employee_info" as user "postgres".
+employee_info=# \d
+             List of relations
+ Schema |     Name      | Type  |  Owner
+--------+---------------+-------+----------
+ public | company       | table | postgres
+ public | department    | table | postgres
+ public | employee_data | table | postgres
+(3 rows)
+
+
+employee_info=# \d company
+               Table "public.company"
+ Column  |  Type   | Collation | Nullable | Default
+---------+---------+-----------+----------+----------
+ id      | integer |           | not null |
+ name    | text    |           | not null |
+ age     | integer |           | not null |
+ address | text    |           | not null |
+ salary  | real    |           | not null |
+ phoneno | bigint  |           | not null | 50000.00
+Indexes:
+    "company_pkey" PRIMARY KEY, btree (id)
+    "company_phoneno_key" UNIQUE CONSTRAINT, btree (phoneno)
+Referenced by:
+    TABLE "department" CONSTRAINT "department_emp_id_fkey" FOREIGN KEY (emp_id) REFERENCES company(id)
+
+
+employee_info=# \d employee_data
+                      Table "public.employee_data"
+     Column     |         Type          | Collation | Nullable | Default
+----------------+-----------------------+-----------+----------+---------
+ emp_id         | integer               |           |          |
+ first_name     | character varying(50) |           |          |
+ last_name      | character varying(50) |           |          |
+ age            | integer               |           |          |
+ gender         | character varying(1)  |           |          |
+ address        | character varying(50) |           |          |
+ salary         | real                  |           |          |
+ marrtialstatus | text                  |           |          |
+
+
+employee_info=# \d departmrnt
+Did not find any relation named "departmrnt".
+employee_info=# \d department
+               Table "public.department"
+   Column   |  Type   | Collation | Nullable | Default
+------------+---------+-----------+----------+---------
+ dept_id    | integer |           | not null |
+ dept_name  | text    |           | not null |
+ emp_id     | integer |           |          |
+ experience | real    |           | not null |
+Indexes:
+    "department_pkey" PRIMARY KEY, btree (dept_id)
+Check constraints:
+    "department_experience_check" CHECK (experience > 0::double precision)
+Foreign-key constraints:
+    "department_emp_id_fkey" FOREIGN KEY (emp_id) REFERENCES company(id)
+
+
+employee_info=# \d company
+               Table "public.company"
+ Column  |  Type   | Collation | Nullable | Default
+---------+---------+-----------+----------+----------
+ id      | integer |           | not null |
+ name    | text    |           | not null |
+ age     | integer |           | not null |
+ address | text    |           | not null |
+ salary  | real    |           | not null |
+ phoneno | bigint  |           | not null | 50000.00
+Indexes:
+    "company_pkey" PRIMARY KEY, btree (id)
+    "company_phoneno_key" UNIQUE CONSTRAINT, btree (phoneno)
+Referenced by:
+    TABLE "department" CONSTRAINT "department_emp_id_fkey" FOREIGN KEY (emp_id) REFERENCES company(id)
+
+
+employee_info=# insert into company values(1, 'Kedarnathrao', 56, 'Jalgaon', 700000.00,8670757098);
+INSERT 0 1
+employee_info=# insert into company values(2, 'Gopal', 36, 'Chandrapur', 400000.00,6607570660);
+INSERT 0 1
+employee_info=# insert into company values(3, 'Gangeshrao', 66, 'Nandurbar', 900000.00,7907780669);
+INSERT 0 1
+employee_info=# insert into company values(4, 'Sandesh', 26, 'Pune', 300000.00,8807780688);
+INSERT 0 1
+employee_info=# insert into company values(5, 'Omkar', 32, 'Raigad', 450000.00,4504380621);
+INSERT 0 1
+employee_info=# select * from company;
+ id |     name     | age |  address   | salary |  phoneno
+----+--------------+-----+------------+--------+------------
+  1 | Kedarnathrao |  56 | Jalgaon    | 700000 | 8670757098
+  2 | Gopal        |  36 | Chandrapur | 400000 | 6607570660
+  3 | Gangeshrao   |  66 | Nandurbar  | 900000 | 7907780669
+  4 | Sandesh      |  26 | Pune       | 300000 | 8807780688
+  5 | Omkar        |  32 | Raigad     | 450000 | 4504380621
+(5 rows)
+
+
+employee_info=# \d department
+               Table "public.department"
+   Column   |  Type   | Collation | Nullable | Default
+------------+---------+-----------+----------+---------
+ dept_id    | integer |           | not null |
+ dept_name  | text    |           | not null |
+ emp_id     | integer |           |          |
+ experience | real    |           | not null |
+Indexes:
+    "department_pkey" PRIMARY KEY, btree (dept_id)
+Check constraints:
+    "department_experience_check" CHECK (experience > 0::double precision)
+Foreign-key constraints:
+    "department_emp_id_fkey" FOREIGN KEY (emp_id) REFERENCES company(id)
+
+
+employee_info=# insert into department values(101, 'IndustrialSafety', 1, 30);
+INSERT 0 1
+employee_info=# insert into department values(102, 'IT Automation', 2, 10);
+INSERT 0 1
+employee_info=# insert into department values(103, 'IT Support', 3, 40);
+INSERT 0 1
+employee_info=# insert into department values(104, 'Java Developer', 4, 2);
+INSERT 0 1
+employee_info=# insert into department values(105, 'IT Security', 5, 8);
+INSERT 0 1
+employee_info=# select * from department;
+ dept_id |    dept_name     | emp_id | experience
+---------+------------------+--------+------------
+     101 | IndustrialSafety |      1 |         30
+     102 | IT Automation    |      2 |         10
+     103 | IT Support       |      3 |         40
+     104 | Java Developer   |      4 |          2
+     105 | IT Security      |      5 |          8
+(5 rows)
+
+
+employee_info=# select * from company;
+ id |     name     | age |  address   | salary |  phoneno
+----+--------------+-----+------------+--------+------------
+  1 | Kedarnathrao |  56 | Jalgaon    | 700000 | 8670757098
+  2 | Gopal        |  36 | Chandrapur | 400000 | 6607570660
+  3 | Gangeshrao   |  66 | Nandurbar  | 900000 | 7907780669
+  4 | Sandesh      |  26 | Pune       | 300000 | 8807780688
+  5 | Omkar        |  32 | Raigad     | 450000 | 4504380621
+(5 rows)
+
+
+employee_info=# alter table employee_data add Day_leaves int not null default 0, add OvertTime int not null default 0;
+ALTER TABLE
+employee_info=# select * from employee_data;
+ emp_id | first_name | last_name | age | gender |       address       | salary | marrtialstatus | day_leaves | overttime
+--------+------------+-----------+-----+--------+---------------------+--------+----------------+------------+-----------
+      2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 | Married        |          0 |         0
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000 | Married        |          0 |         0
+      4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan     |  55000 | Married        |          0 |         0
+      5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas        |  55000 | Married        |          0 |         0
+      6 | Mahadev    | Purandare |  45 | M      | 40, Iscon           |  60000 | Married        |          0 |         0
+      7 | Rajesh     | Wagale    |  45 | M      | 40, Icon            |  60000 | Married        |          0 |         0
+      8 | Jitesh     | Chitale   |  45 | M      | 40, Shevneri        |  70000 | Married        |          0 |         0
+(7 rows)
+
+
+employee_info=# alter table employee_data alter column day_leaves type real, alter column overTime type real;
+ERROR:  column "overtime" of relation "employee_data" does not exist
+employee_info=# alter table employee_data alter column day_leaves type real, alter column ovetTime type real;
+ERROR:  column "ovettime" of relation "employee_data" does not exist
+employee_info=# alter table employee_data alter column day_leaves type real, alter column overtTime type real;
+ALTER TABLE
+employee_info=# select * from employee_data;
+ emp_id | first_name | last_name | age | gender |       address       | salary | marrtialstatus | day_leaves | overttime
+--------+------------+-----------+-----+--------+---------------------+--------+----------------+------------+-----------
+      2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 | Married        |          0 |         0
+      3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000 | Married        |          0 |         0
+      4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan     |  55000 | Married        |          0 |         0
+      5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas        |  55000 | Married        |          0 |         0
+      6 | Mahadev    | Purandare |  45 | M      | 40, Iscon           |  60000 | Married        |          0 |         0
+      7 | Rajesh     | Wagale    |  45 | M      | 40, Icon            |  60000 | Married        |          0 |         0
+      8 | Jitesh     | Chitale   |  45 | M      | 40, Shevneri        |  70000 | Married        |          0 |         0
+(7 rows)
+
+
+employee_info=# \d employee_data;
+                      Table "public.employee_data"
+     Column     |         Type          | Collation | Nullable | Default
+----------------+-----------------------+-----------+----------+---------
+ emp_id         | integer               |           |          |
+ first_name     | character varying(50) |           |          |
+ last_name      | character varying(50) |           |          |
+ age            | integer               |           |          |
+ gender         | character varying(1)  |           |          |
+ address        | character varying(50) |           |          |
+ salary         | real                  |           |          |
+ marrtialstatus | text                  |           |          |
+ day_leaves     | real                  |           | not null | 0
+ overttime      | real                  |           | not null | 0
+
+
+employee_info=# alter table employee_data alter column first_name type text, alter column last_name type text;
+ALTER TABLE
+employee_info=# \d employee_data;
+                      Table "public.employee_data"
+     Column     |         Type          | Collation | Nullable | Default
+----------------+-----------------------+-----------+----------+---------
+ emp_id         | integer               |           |          |
+ first_name     | text                  |           |          |
+ last_name      | text                  |           |          |
+ age            | integer               |           |          |
+ gender         | character varying(1)  |           |          |
+ address        | character varying(50) |           |          |
+ salary         | real                  |           |          |
+ marrtialstatus | text                  |           |          |
+ day_leaves     | real                  |           | not null | 0
+ overttime      | real                  |           | not null | 0
+
+
+employee_info=# alter table employee_data drop column overttime;
+ALTER TABLE
+employee_info=# \d employee_data;
+                      Table "public.employee_data"
+     Column     |         Type          | Collation | Nullable | Default
+----------------+-----------------------+-----------+----------+---------
+ emp_id         | integer               |           |          |
+ first_name     | text                  |           |          |
+ last_name      | text                  |           |          |
+ age            | integer               |           |          |
+ gender         | character varying(1)  |           |          |
+ address        | character varying(50) |           |          |
+ salary         | real                  |           |          |
+ marrtialstatus | text                  |           |          |
+ day_leaves     | real                  |           | not null | 0
+
+
+employee_info=# alter column employee_data rename column emp_id to id;
+ERROR:  syntax error at or near "column"
+LINE 1: alter column employee_data rename column emp_id to id;
+              ^
+employee_info=# alter table employee_data rename column emp_id to id;
+ALTER TABLE
+employee_info=# \d employee_data;
+                      Table "public.employee_data"
+     Column     |         Type          | Collation | Nullable | Default
+----------------+-----------------------+-----------+----------+---------
+ id             | integer               |           |          |
+ first_name     | text                  |           |          |
+ last_name      | text                  |           |          |
+ age            | integer               |           |          |
+ gender         | character varying(1)  |           |          |
+ address        | character varying(50) |           |          |
+ salary         | real                  |           |          |
+ marrtialstatus | text                  |           |          |
+ day_leaves     | real                  |           | not null | 0
+
+
+employee_info=# alter table employee_data rename column address to location;
+ALTER TABLE
+employee_info=# \d employee_data;
+                      Table "public.employee_data"
+     Column     |         Type          | Collation | Nullable | Default
+----------------+-----------------------+-----------+----------+---------
+ id             | integer               |           |          |
+ first_name     | text                  |           |          |
+ last_name      | text                  |           |          |
+ age            | integer               |           |          |
+ gender         | character varying(1)  |           |          |
+ location       | character varying(50) |           |          |
+ salary         | real                  |           |          |
+ marrtialstatus | text                  |           |          |
+ day_leaves     | real                  |           | not null | 0
+
+
+employee_info=#
+employee_info=#
+employee_info=#
+employee_info=#
+employee_info=#
+employee_info=# alter table employee_data rename to data_table_of_employee;
+ALTER TABLE
+employee_info=# select * from data_table_of_employee;
+ id | first_name | last_name | age | gender |      location       | salary | marrtialstatus | day_leaves
+----+------------+-----------+-----+--------+---------------------+--------+----------------+------------
+  2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 | Married        |          0
+  3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000 | Married        |          0
+  4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan     |  55000 | Married        |          0
+  5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas        |  55000 | Married        |          0
+  6 | Mahadev    | Purandare |  45 | M      | 40, Iscon           |  60000 | Married        |          0
+  7 | Rajesh     | Wagale    |  45 | M      | 40, Icon            |  60000 | Married        |          0
+  8 | Jitesh     | Chitale   |  45 | M      | 40, Shevneri        |  70000 | Married        |          0
+(7 rows)
+
+
+employee_info=# \d
+                 List of relations
+ Schema |          Name          | Type  |  Owner
+--------+------------------------+-------+----------
+ public | company                | table | postgres
+ public | data_table_of_employee | table | postgres
+ public | department             | table | postgres
+(3 rows)
+
+
+employee_info=# \connect postgres;
+You are now connected to database "postgres" as user "postgres".
+postgres=# select * from pg_stat_activity where datname='employee_info';
+ datid | datname | pid | leader_pid | usesysid | usename | application_name | client_addr | client_hostname | client_port | backend_start | xact_start | query_start | state_change | wait_event_type | wait_event | state | backend_xid | backend_xmin | query_id | query | backend_type
+-------+---------+-----+------------+----------+---------+------------------+-------------+-----------------+-------------+---------------+------------+-------------+--------------+-----------------+------------+-------+-------------+--------------+----------+-------+--------------
+(0 rows)
+
+
+postgres=# ALTER DATABASE employee_info RENAME TO employee_data;
+ALTER DATABASE
+postgres=# \c employee_data;
+You are now connected to database "employee_data" as user "postgres".
+employee_data=# \list
+                                           List of databases
+     Name      |  Owner   | Encoding |      Collate       |       Ctype        |   Access privileges
+---------------+----------+----------+--------------------+--------------------+-----------------------
+ employee_data | postgres | UTF8     | English_India.1252 | English_India.1252 |
+ postgres      | postgres | UTF8     | English_India.1252 | English_India.1252 |
+ template0     | postgres | UTF8     | English_India.1252 | English_India.1252 | =c/postgres          +
+               |          |          |                    |                    | postgres=CTc/postgres
+ template1     | postgres | UTF8     | English_India.1252 | English_India.1252 | =c/postgres          +
+               |          |          |                    |                    | postgres=CTc/postgres
+(4 rows)
+
+
+employee_data=# \data
+                     List of aggregate functions
+ Schema | Name | Result data type | Argument data types | Description
+--------+------+------------------+---------------------+-------------
+(0 rows)
+
+
+employee_data=# \d
+                 List of relations
+ Schema |          Name          | Type  |  Owner
+--------+------------------------+-------+----------
+ public | company                | table | postgres
+ public | data_table_of_employee | table | postgres
+ public | department             | table | postgres
+(3 rows)
+
+
+employee_data=# select * from data_table_of_employee;
+ id | first_name | last_name | age | gender |      location       | salary | marrtialstatus | day_leaves
+----+------------+-----------+-----+--------+---------------------+--------+----------------+------------
+  2 | Lokesh     | Raut      |  55 | M      | 40, Iscon Residency |  55000 | Married        |          0
+  3 | Rajesh     | Wagale    |  49 | M      | 50, SaiDarshan      |  55000 | Married        |          0
+  4 | Jitesh     | Chitale   |  29 | M      | 10, MukhDarshan     |  55000 | Married        |          0
+  5 | Mahadev    | Purandare |  79 | M      | 15, SaiNiwas        |  55000 | Married        |          0
+  6 | Mahadev    | Purandare |  45 | M      | 40, Iscon           |  60000 | Married        |          0
+  7 | Rajesh     | Wagale    |  45 | M      | 40, Icon            |  60000 | Married        |          0
+  8 | Jitesh     | Chitale   |  45 | M      | 40, Shevneri        |  70000 | Married        |          0
+(7 rows)
+
+
+employee_data=# select * from department;
+ dept_id |    dept_name     | emp_id | experience
+---------+------------------+--------+------------
+     101 | IndustrialSafety |      1 |         30
+     102 | IT Automation    |      2 |         10
+     103 | IT Support       |      3 |         40
+     104 | Java Developer   |      4 |          2
+     105 | IT Security      |      5 |          8
+(5 rows)
+
+
+employee_data=# select id, dept_id from data_table_of_employee CROSS JOIN department;
+ id | dept_id
+----+---------
+  2 |     101
+  3 |     101
+  4 |     101
+  5 |     101
+  6 |     101
+  7 |     101
+  8 |     101
+  2 |     102
+  3 |     102
+  4 |     102
+  5 |     102
+  6 |     102
+  7 |     102
+  8 |     102
+  2 |     103
+  3 |     103
+  4 |     103
+  5 |     103
+  6 |     103
+  7 |     103
+  8 |     103
+  2 |     104
+  3 |     104
+  4 |     104
+  5 |     104
+  6 |     104
+  7 |     104
+  8 |     104
+  2 |     105
+  3 |     105
+  4 |     105
+  5 |     105
+  6 |     105
+  7 |     105
+  8 |     105
+(35 rows)
+
+
+employee_data=#
+employee_data=# select data_table_of_employee.first, department.experience, data_table_of_employee.salary from data_table_of_employee inner join department on data_table_of_employee.id = department.emp_id;
+ERROR:  column data_table_of_employee.first does not exist
+LINE 1: select data_table_of_employee.first, department.experience, ...
+               ^
+employee_data=# select data_table_of_employee.first_name, department.experience, data_table_of_employee.salary from data_table_of_employee inner join department on data_table_of_employee.id = department.emp_id;
+ first_name | experience | salary
+------------+------------+--------
+ Lokesh     |         10 |  55000
+ Rajesh     |         40 |  55000
+ Jitesh     |          2 |  55000
+ Mahadev    |          8 |  55000
+(4 rows)
+
+
+employee_data=# select data_table_of_employee.first_name, department.experience, data_table_of_employee.salary from data_table_of_employee inner join department on data_table_of_employee.id = department.dept_id;
+ first_name | experience | salary
+------------+------------+--------
+(0 rows)
+
+
+employee_data=# select data_table_of_employee.first_name, data_table_of_employee.last_name, department.experience, data_table_of_employee.salary from data_table_of_employee inner join department on data_table_of_employee.id = department.dept_id;
+ first_name | last_name | experience | salary
+------------+-----------+------------+--------
+(0 rows)
+
+
+employee_data=# select data_table_of_employee.first_name, data_table_of_employee.last_name, department.experience, data_table_of_employee.salary from data_table_of_employee inner join department on data_table_of_employee.id = department.emp_id;
+ first_name | last_name | experience | salary
+------------+-----------+------------+--------
+ Lokesh     | Raut      |         10 |  55000
+ Rajesh     | Wagale    |         40 |  55000
+ Jitesh     | Chitale   |          2 |  55000
+ Mahadev    | Purandare |          8 |  55000
+(4 rows)
+
+
+employee_data=# select data_table_of_employee.first_name, data_table_of_employee.last_name, department.experience, data_table_of_employee.salary from data_table_of_employee inner join department on data_table_of_employee.age<30;
+ first_name | last_name | experience | salary
+------------+-----------+------------+--------
+ Jitesh     | Chitale   |         30 |  55000
+ Jitesh     | Chitale   |         10 |  55000
+ Jitesh     | Chitale   |         40 |  55000
+ Jitesh     | Chitale   |          2 |  55000
+ Jitesh     | Chitale   |          8 |  55000
+(5 rows)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,479 @@
+Server [localhost]:
+Database [postgres]:
+Port [5432]:
+Username [postgres]:
+Password for user postgres:
+psql (14.3)
+WARNING: Console code page (437) differs from Windows code page (1252)
+         8-bit characters might not work correctly. See psql reference
+         page "Notes for Windows users" for details.
+Type "help" for help.
+
+postgres=# \l
+                                           List of databases
+     Name      |  Owner   | Encoding |      Collate       |       Ctype        |   Access privileges
+---------------+----------+----------+--------------------+--------------------+-----------------------
+ employee_data | postgres | UTF8     | English_India.1252 | English_India.1252 |
+ postgres      | postgres | UTF8     | English_India.1252 | English_India.1252 |
+ template0     | postgres | UTF8     | English_India.1252 | English_India.1252 | =c/postgres          +
+               |          |          |                    |                    | postgres=CTc/postgres
+ template1     | postgres | UTF8     | English_India.1252 | English_India.1252 | =c/postgres          +
+               |          |          |                    |                    | postgres=CTc/postgres
+(4 rows)
+
+
+postgres=# \c employee_data;
+You are now connected to database "employee_data" as user "postgres".
+employee_data=# \d
+                 List of relations
+ Schema |          Name          | Type  |  Owner
+--------+------------------------+-------+----------
+ public | company                | table | postgres
+ public | data_table_of_employee | table | postgres
+ public | department             | table | postgres
+(3 rows)
+
+
+employee_data=# select * from company;
+ id |     name     | age |  address   | salary |  phoneno
+----+--------------+-----+------------+--------+------------
+  1 | Kedarnathrao |  56 | Jalgaon    | 700000 | 8670757098
+  2 | Gopal        |  36 | Chandrapur | 400000 | 6607570660
+  3 | Gangeshrao   |  66 | Nandurbar  | 900000 | 7907780669
+  4 | Sandesh      |  26 | Pune       | 300000 | 8807780688
+  5 | Omkar        |  32 | Raigad     | 450000 | 4504380621
+(5 rows)
+
+
+employee_data=# select id, name from company where id in ( select id from company where salary >= 20000);
+ id |     name
+----+--------------
+  1 | Kedarnathrao
+  2 | Gopal
+  3 | Gangeshrao
+  4 | Sandesh
+  5 | Omkar
+(5 rows)
+
+
+employee_data=# select * from department;
+ dept_id |    dept_name     | emp_id | experience
+---------+------------------+--------+------------
+     101 | IndustrialSafety |      1 |         30
+     102 | IT Automation    |      2 |         10
+     103 | IT Support       |      3 |         40
+     104 | Java Developer   |      4 |          2
+     105 | IT Security      |      5 |          8
+(5 rows)
+
+
+employee_data=# select id, name, phoneno from company where id in ( select id from company where age >= 30);
+ id |     name     |  phoneno
+----+--------------+------------
+  1 | Kedarnathrao | 8670757098
+  2 | Gopal        | 6607570660
+  3 | Gangeshrao   | 7907780669
+  5 | Omkar        | 4504380621
+(4 rows)
+
+
+employee_data=# select id, name, dept_name from company, department where id in ( select id from company where age >= 30);
+ id |     name     |    dept_name
+----+--------------+------------------
+  1 | Kedarnathrao | IndustrialSafety
+  2 | Gopal        | IndustrialSafety
+  3 | Gangeshrao   | IndustrialSafety
+  5 | Omkar        | IndustrialSafety
+  1 | Kedarnathrao | IT Automation
+  2 | Gopal        | IT Automation
+  3 | Gangeshrao   | IT Automation
+  5 | Omkar        | IT Automation
+  1 | Kedarnathrao | IT Support
+  2 | Gopal        | IT Support
+  3 | Gangeshrao   | IT Support
+  5 | Omkar        | IT Support
+  1 | Kedarnathrao | Java Developer
+  2 | Gopal        | Java Developer
+  3 | Gangeshrao   | Java Developer
+  5 | Omkar        | Java Developer
+  1 | Kedarnathrao | IT Security
+  2 | Gopal        | IT Security
+  3 | Gangeshrao   | IT Security
+  5 | Omkar        | IT Security
+(20 rows)
+
+employee_data=# create table company_id(id int primary key not null);
+CREATE TABLE
+employee_data=# \d company_id;
+             Table "public.company_id"
+ Column |  Type   | Collation | Nullable | Default
+--------+---------+-----------+----------+---------
+ id     | integer |           | not null |
+Indexes:
+    "company_id_pkey" PRIMARY KEY, btree (id)
+
+employee_data=# insert into company_id select id from company where id in (select id from company);
+INSERT 0 5
+employee_data=# select * from company_id;
+ id
+----
+  1
+  2
+  3
+  4
+  5
+(5 rows)
+
+employee_data=# \d company;
+               Table "public.company"
+ Column  |  Type   | Collation | Nullable | Default
+---------+---------+-----------+----------+----------
+ id      | integer |           | not null |
+ name    | text    |           | not null |
+ age     | integer |           | not null |
+ address | text    |           | not null |
+ salary  | real    |           | not null |
+ phoneno | bigint  |           | not null | 50000.00
+Indexes:
+    "company_pkey" PRIMARY KEY, btree (id)
+    "company_phoneno_key" UNIQUE CONSTRAINT, btree (phoneno)
+Referenced by:
+    TABLE "department" CONSTRAINT "department_emp_id_fkey" FOREIGN KEY (emp_id) REFERENCES company(id)
+
+
+employee_data=# alter table company_id add column nameee text, add column ageee integer, add column mobileno bigint;
+ALTER TABLE
+employee_data=# \d company_id;
+              Table "public.company_id"
+  Column  |  Type   | Collation | Nullable | Default
+----------+---------+-----------+----------+---------
+ id       | integer |           | not null |
+ nameee   | text    |           |          |
+ ageee    | integer |           |          |
+ mobileno | bigint  |           |          |
+Indexes:
+    "company_id_pkey" PRIMARY KEY, btree (id)
+
+employee_data=# alter table company_id add column addresss text, add column salary real;
+ALTER TABLE
+employee_data=# select * from company_id;
+ id | nameee | ageee | mobileno | addresss | salary
+----+--------+-------+----------+----------+--------
+(0 rows)
+
+employee_data=# alter table company_id drop column mobileno;
+ALTER TABLE
+employee_data=# select * from company_id;
+ id | nameee | ageee | addresss | salary
+----+--------+-------+----------+--------
+(0 rows)
+
+
+employee_data=# alter table company_id add column mobileno bigint;
+ALTER TABLE
+employee_data=# select * from company_id;
+ id | nameee | ageee | addresss | salary | mobileno
+----+--------+-------+----------+--------+----------
+(0 rows)
+
+
+employee_data=# insert into company_id select * from company;
+INSERT 0 5
+employee_data=# select * from company_id;
+ id |    nameee    | ageee |  addresss  | salary |  mobileno
+----+--------------+-------+------------+--------+------------
+  1 | Kedarnathrao |    56 | Jalgaon    | 700000 | 8670757098
+  2 | Gopal        |    36 | Chandrapur | 400000 | 6607570660
+  3 | Gangeshrao   |    66 | Nandurbar  | 900000 | 7907780669
+  4 | Sandesh      |    26 | Pune       | 300000 | 8807780688
+  5 | Omkar        |    32 | Raigad     | 450000 | 4504380621
+(5 rows)
+
+employee_data=# update company set salary = salary *1.05 where age in (select age from company where age <= 35);
+UPDATE 2
+employee_data=# select * from company_id;
+ id |    nameee    | ageee |  addresss  | salary |  mobileno
+----+--------------+-------+------------+--------+------------
+  1 | Kedarnathrao |    56 | Jalgaon    | 700000 | 8670757098
+  2 | Gopal        |    36 | Chandrapur | 400000 | 6607570660
+  3 | Gangeshrao   |    66 | Nandurbar  | 900000 | 7907780669
+  4 | Sandesh      |    26 | Pune       | 300000 | 8807780688
+  5 | Omkar        |    32 | Raigad     | 450000 | 4504380621
+(5 rows)
+
+
+employee_data=# select * from company;
+ id |     name     | age |  address   | salary |  phoneno
+----+--------------+-----+------------+--------+------------
+  1 | Kedarnathrao |  56 | Jalgaon    | 700000 | 8670757098
+  2 | Gopal        |  36 | Chandrapur | 400000 | 6607570660
+  3 | Gangeshrao   |  66 | Nandurbar  | 900000 | 7907780669
+  4 | Sandesh      |  26 | Pune       | 315000 | 8807780688
+  5 | Omkar        |  32 | Raigad     | 472500 | 4504380621
+(5 rows)
+
+
+employee_data=# delete from company_id where age in ( select age from company where age <= 36);
+ERROR:  column "age" does not exist
+LINE 1: delete from company_id where age in ( select age from compan...
+                                     ^
+employee_data=# delete from company_id where ageee in ( select ageee from company_id where ageee <= 36);
+DELETE 3
+employee_data=# select * from company_id;
+ id |    nameee    | ageee | addresss  | salary |  mobileno
+----+--------------+-------+-----------+--------+------------
+  1 | Kedarnathrao |    56 | Jalgaon   | 700000 | 8670757098
+  3 | Gangeshrao   |    66 | Nandurbar | 900000 | 7907780669
+(2 rows)
+
+employee_data=# create table Studentin (roll_no serial primary key not null, name text, percentage real);
+CREATE TABLE
+
+employee_data=# insert into studentin (name, percentage) values ('Rahul Ahuja', 88.88);
+INSERT 0 1
+employee_data=# insert into studentin (name, percentage) values ('Ashish Kumar', 78.83);
+INSERT 0 1
+employee_data=# insert into studentin (name, percentage) values ('Randeep Tanwar', 54.73);
+INSERT 0 1
+employee_data=# insert into studentin (name, percentage) values ('Umarendra Shikla', 94.30);
+INSERT 0 1
+employee_data=# select * from studentin;
+ roll_no |       name       | percentage
+---------+------------------+------------
+       1 | Rahul Ahuja      |      88.88
+       2 | Ashish Kumar     |      78.83
+       3 | Randeep Tanwar   |      54.73
+       4 | Umarendra Shikla |       94.3
+(4 rows)
+
+
+employee_data=# \d studentin;
+                                 Table "public.studentin"
+   Column   |  Type   | Collation | Nullable |                  Default
+------------+---------+-----------+----------+--------------------------------------------
+ roll_no    | integer |           | not null | nextval('studentin_roll_no_seq'::regclass)
+ name       | text    |           |          |
+ percentage | real    |           |          |
+Indexes:
+    "studentin_pkey" PRIMARY KEY, btree (roll_no)
+
+
+employee_data=# select age(timestamp '2000-05-26', timestamp '2022-05-26');
+    age
+-----------
+ -22 years
+(1 row)
+
+
+employee_data=# select age(timestamp '2022-05-26', timestamp '2000-05-26');
+   age
+----------
+ 22 years
+(1 row)
+
+
+employee_data=# select age(timestamp '1950-01-26');
+          age
+------------------------
+ 72 years 4 mons 4 days
+(1 row)
+
+
+employee_data=# select current time;
+ERROR:  column "current" does not exist
+LINE 1: select current time;
+               ^
+employee_data=# select current_time;
+     current_time
+-----------------------
+ 14:47:28.793886+05:30
+(1 row)
+
+
+employee_data=# select current_date;
+ current_date
+--------------
+ 2022-05-30
+(1 row)
+
+
+employee_data=# select current_timestanp;
+ERROR:  column "current_timestanp" does not exist
+LINE 1: select current_timestanp;
+               ^
+employee_data=# select current_timestamp;
+        current_timestamp
+----------------------------------
+ 2022-05-30 14:49:53.273517+05:30
+(1 row)
+
+
+employee_data=# select current_timestamp(2);
+      current_timestamp
+------------------------------
+ 2022-05-30 14:50:12.89+05:30
+(1 row)
+
+
+employee_data=# select current_timestamp(20);
+WARNING:  TIMESTAMP(20) WITH TIME ZONE precision reduced to maximum allowed, 6
+        current_timestamp
+----------------------------------
+ 2022-05-30 14:50:22.394015+05:30
+(1 row)
+
+
+employee_data=# select current_timestamp(5);
+        current_timestamp
+---------------------------------
+ 2022-05-30 14:50:29.88217+05:30
+(1 row)
+
+
+employee_data=# select local_timestamp(5);
+ERROR:  function local_timestamp(integer) does not exist
+LINE 1: select local_timestamp(5);
+               ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+employee_data=# select local_timestamp;
+ERROR:  column "local_timestamp" does not exist
+LINE 1: select local_timestamp;
+               ^
+employee_data=# select local_time;
+ERROR:  column "local_time" does not exist
+LINE 1: select local_time;
+               ^
+employee_data=# select localtime;
+    localtime
+-----------------
+ 14:51:17.433885
+(1 row)
+
+
+employee_data=# select localtimestamp;
+       localtimestamp
+----------------------------
+ 2022-05-30 14:51:25.273804
+(1 row)
+
+
+employee_data=# create or replace function totalrecords()
+employee_data-# returns integer as $total$
+employee_data$# declare
+employee_data$# total integer;
+employee_data$# begin
+employee_data$# select count(*) into total from company;
+employee_data$# return total;
+employee_data$# end;
+employee_data$# $total$ LANGUAGE PLPGSQL;
+CREATE FUNCTION
+employee_data=# select totalrecords();
+ totalrecords
+--------------
+            5
+(1 row)
+
+
+employee_data=# select min(age), max(age) from company;
+ min | max
+-----+-----
+  26 |  66
+(1 row)
+
+
+employee_data=# select min(age), max(name) from company;
+ min |   max
+-----+---------
+  26 | Sandesh
+(1 row)
+
+
+employee_data=# select min(salary), max(salary) from company;
+  min   |  max
+--------+--------
+ 315000 | 900000
+(1 row)
+
+
+employee_data=# select min(salary), max(salary), name from company;
+ERROR:  column "company.name" must appear in the GROUP BY clause or be used in an aggregate function
+LINE 1: select min(salary), max(salary), name from company;
+                                         ^
+employee_data=# select min(salary), max(salary), min(name) from company;
+  min   |  max   |    min
+--------+--------+------------
+ 315000 | 900000 | Gangeshrao
+(1 row)
+
+employee_data=# select avg(salary) from company;
+  avg
+--------
+ 557500
+(1 row)
+
+
+employee_data=# select avg(age) from company;
+         avg
+---------------------
+ 43.2000000000000000
+(1 row)
+
+
+employee_data=# select sum(salary) from company;
+    sum
+------------
+ 2.7875e+06
+(1 row)
+
+
+employee_data=# select sum(id) from company;
+ sum
+-----
+  15
+(1 row)
+
+
+employee_data=# select BIT_LENGTH ('java');
+ bit_length
+------------
+         32
+(1 row)
+
+
+employee_data=# select CHAR_LENGTH ('fuel organizaytion');
+ char_length
+-------------
+          18
+(1 row)
+
+
+employee_data=# select concat('abc','defgh');
+  concat
+----------
+ abcdefgh
+(1 row)
+
+employee_data=# select lower('abc','defgh');
+ERROR:  function lower(unknown, unknown) does not exist
+LINE 1: select lower('abc','defgh');
+               ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+employee_data=# select lower('ATY');
+ lower
+-------
+ aty
+(1 row)
+
+
+employee_data=# select upper('ffbhtdh');
+  upper
+---------
+ FFBHTDH
+(1 row)
+
+
+employee_data=# select reverse('ffbhtdh');
+ reverse
+---------
+ hdthbff
+(1 row)
